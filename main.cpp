@@ -449,7 +449,7 @@ int main() {
 
     //Iniitalize VoroniDiagram Class Object and then call it on.
     VoronoiDiagram voronoi_obj;
-    int N = 10000; // N is th number of sites, I start with 500.
+    int N = 200; // N is th number of sites, I start with 500.
     //Compute.
     for (int i = 0; i < N; ++i) {
         voronoi_obj.points.push_back(Vector(rand() / (double)RAND_MAX, rand() / (double)RAND_MAX));
