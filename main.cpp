@@ -179,6 +179,32 @@ void save_frame(const std::vector<Polygon>& cells, std::string filename, int fra
     stbi_write_png(os.str().c_str(), W, H, 3, image.data(), W * 3);
 }
 
+// saves a static svg file. The polygon vertices are supposed to be in the range [0..1], and a canvas of size 1000x1000 is created
+void save_svg(const std::vector<Polygon>& polygons, std::string filename, const std::vector<Vector>* points = NULL, std::string fillcol = "none") {
+    FILE* f = fopen(filename.c_str(), "w+");
+    fprintf(f, "<svg xmlns = \"http://www.w3.org/2000/svg\" width = \"1000\" height = \"1000\">\n");
+    for (int i = 0; i < polygons.size(); i++) {
+        fprintf(f, "<g>\n");
+        fprintf(f, "<polygon points = \"");
+        for (int j = 0; j < polygons[i].vertices.size(); j++) {
+            fprintf(f, "%3.3f, %3.3f ", (polygons[i].vertices[j][0] * 1000), (1000 - polygons[i].vertices[j][1] * 1000));
+        }
+        fprintf(f, "\"\nfill = \"%s\" stroke = \"black\"/>\n", fillcol.c_str());
+        fprintf(f, "</g>\n");
+    }
+
+    if (points) {
+        fprintf(f, "<g>\n");
+        for (int i = 0; i < points->size(); i++) {
+            fprintf(f, "<circle cx = \"%3.3f\" cy = \"%3.3f\" r = \"3\" />\n", (*points)[i][0] * 1000., 1000. - (*points)[i][1] * 1000);
+        }
+        fprintf(f, "</g>\n");
+
+    }
+
+    fprintf(f, "</svg>\n");
+    fclose(f);
+}
 
 class VoronoiDiagram {
 
@@ -387,21 +413,21 @@ public:
 };
 
 // saves a static svg file. The polygon vertices are supposed to be in the range [0..1], and a canvas of size 1000x1000 is created
-void save_svg(const std::vector<Polygon>& polygons, std::string filename, std::string fillcol = "none") {
-    FILE* f = fopen(filename.c_str(), "w+");
-    fprintf(f, "<svg xmlns = \"http://www.w3.org/2000/svg\" width = \"1000\" height = \"1000\">\n");
-    for (int i = 0; i < polygons.size(); i++) {
-        fprintf(f, "<g>\n");
-        fprintf(f, "<polygon points = \"");
-        for (int j = 0; j < polygons[i].vertices.size(); j++) {
-            fprintf(f, "%3.3f, %3.3f ", (polygons[i].vertices[j][0] * 1000), (1000 - polygons[i].vertices[j][1] * 1000));
-        }
-        fprintf(f, "\"\nfill = \"%s\" stroke = \"black\"/>\n", fillcol.c_str());
-        fprintf(f, "</g>\n");
-    }
-    fprintf(f, "</svg>\n");
-    fclose(f);
-}
+// void save_svg(const std::vector<Polygon>& polygons, std::string filename, std::string fillcol = "none") {
+//     FILE* f = fopen(filename.c_str(), "w+");
+//     fprintf(f, "<svg xmlns = \"http://www.w3.org/2000/svg\" width = \"1000\" height = \"1000\">\n");
+//     for (int i = 0; i < polygons.size(); i++) {
+//         fprintf(f, "<g>\n");
+//         fprintf(f, "<polygon points = \"");
+//         for (int j = 0; j < polygons[i].vertices.size(); j++) {
+//             fprintf(f, "%3.3f, %3.3f ", (polygons[i].vertices[j][0] * 1000), (1000 - polygons[i].vertices[j][1] * 1000));
+//         }
+//         fprintf(f, "\"\nfill = \"%s\" stroke = \"black\"/>\n", fillcol.c_str());
+//         fprintf(f, "</g>\n");
+//     }
+//     fprintf(f, "</svg>\n");
+//     fclose(f);
+// }
 
 
 
@@ -423,15 +449,15 @@ int main() {
 
     //Iniitalize VoroniDiagram Class Object and then call it on.
     VoronoiDiagram voronoi_obj;
-    int N = 100; // N is th number of sites, I start with 500.
+    int N = 10000; // N is th number of sites, I start with 500.
     //Compute.
     for (int i = 0; i < N; ++i) {
         voronoi_obj.points.push_back(Vector(rand() / (double)RAND_MAX, rand() / (double)RAND_MAX));
     }
     voronoi_obj.compute();
 
-    save_svg(voronoi_obj.cells, "voronoi_naive.svg", "white");
-    save_frame(voronoi_obj.cells, "voronoi_naive_3");
+    save_svg(voronoi_obj.cells, "voronoi_naive.svg", &voronoi_obj.points, "white");
+    save_frame(voronoi_obj.cells, "voronoi_naive_4");
     //Confirmatory statement.
     std::cout << "[CONFIRM] Done, generating naive Voronoi with " << N << " points." << std::endl;
     return 0;
