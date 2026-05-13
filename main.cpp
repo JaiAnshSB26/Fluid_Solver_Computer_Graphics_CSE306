@@ -5,6 +5,8 @@
 #include <sstream>
 
 #include <vector>
+//Forgot to include earleir.
+#include <cstring>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
@@ -196,7 +198,7 @@ public:
         cells.resize(points.size());  //Note for self - don't forget.
 
         #pragma omp parallel for schedule(dynamic)
-        for (int i = 0; i < points.size(); ++i){ //The main loop.
+        for (int i = 0; i < (int)points.size(); ++i){ //The main loop.  //Forgot typecasting ehre earlier, adding to be safe.
             Polygon cell; //initialize
             //Base boundary, I use unit square (I have commented out Polygon p in the main method.).
             cell.vertices.push_back(Vector(0.0, 0.0));
@@ -207,7 +209,7 @@ public:
             //Sorting is the optional part, you only try that later if the time allows.
             double w0 = weights.empty() ? 0.0 : weights[i];
 
-            for (int j = 0; j < points.size(); ++j){
+            for (int j = 0; j < (int)points.size(); ++j){ //Added typecasting here too.
                 if (i ==j) continue;
                 double w1 = weights.empty() ? 0.0 : weights[j]; //Note for self - Be careful don't mess up the construct again, hard to trace.
                 cell = clip_by_bisector(cell, points[i], points[j], w0, w1); //C++, compiled we can definitely pre reference it.
@@ -239,7 +241,7 @@ public:
         Polygon result;
         Vector M = (Pi + Pj) / 2.0;
 
-        for (int i = 0; i < V.vertices.size(); ++i) {
+        for (int i = 0; i < (int)V.vertices.size(); ++i) {
             Vector curVertex = V.vertices[i];
             Vector prevVertex = V.vertices[i == 0 ? V.vertices.size() - 1 : i - 1];
 
@@ -429,7 +431,7 @@ int main() {
     voronoi_obj.compute();
 
     save_svg(voronoi_obj.cells, "voronoi_naive.svg", "white");
-    save_frame(voronoi_obj.cells, "voronoi_naive_2");
+    save_frame(voronoi_obj.cells, "voronoi_naive_3");
     //Confirmatory statement.
     std::cout << "[CONFIRM] Done, generating naive Voronoi with " << N << " points." << std::endl;
     return 0;
