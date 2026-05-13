@@ -1,5 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS 1
-
+//Note for self, remember you need to compile with lbfgs.c
+//Try to write efficient and not too verbose code in this project as a good programming practice.
 #include <iostream>
 #include <sstream>
 
@@ -192,7 +193,29 @@ public:
         //      Start with a unit square
         //      For all other sites Pj (optionally, only k nearest neighbors) :
         //          Clip it with bisector of [Pi,Pj]
-        //      (Lab 3, fluids) : also clip it by a disk of radius sqrt(w_i - w_air) centered at Pi
+        cells.resize(points.size());  //Note for self - don't forget.
+
+        #pragma omp parallel for schedule(dynamic)
+        for (int i = 0; i < points.size(); ++i){ //The main loop.
+            Polygon cell; //initialize
+            //First we need to set the unit square as the base boundary.
+            cell.vertices.push_back(Vector(0.0, 0.0));
+            cell.vertices.push_back(Vector(1.0, 0.0));
+            cell.vertices.push_back(Vector(1.0, 1.0));
+            cell.vertices.push_back(Vector(0.0, 1.0));
+            //Note from the lecture, advise by Prof. Bonneel. no need to sort, just the naive one clipping first.
+            //Sorting is the optional part, you only try that later if the time allows.
+            double w0 = weights.empty() ? 0.0 : weights[i];
+
+            for (int j = 0; j < points.size(); ++j){
+                if (i ==j) continue;
+                double w1 = weights.empty() ? 0.0 : weights[j]; //Note for self - Be careful don't mess up the construct again, hard to trace.
+                cell = clip_by_bisector(cell, points[i], points[j], w0, w1); //C++, compiled we can definitely pre reference it.
+            }
+            cells[i] = cell;
+
+            // TODO (Lab 3, fluids) : also clip it by a disk of radius sqrt(w_i - w_air) centered at Pi
+        }
     }
 
 
