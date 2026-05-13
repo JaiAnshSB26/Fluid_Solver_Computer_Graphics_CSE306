@@ -1,0 +1,13 @@
+# Gitignore file to not track the unwanted files (I am just copy pasting a general template I use for all my projects for now, as and when the need arises, I would keep updating it and making it more specific.)
+
+# Build outputs
+*.o
+*.out
+*.exe
+ 
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
