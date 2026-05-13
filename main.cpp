@@ -408,17 +408,29 @@ void save_svg(const std::vector<Polygon>& polygons, std::string filename, std::s
 
 
 int main() {
+    //Commented out to test my implementation for now.
+    // Polygon p;
+    // p.vertices.push_back(Vector(0.1, 0.2));
+    // p.vertices.push_back(Vector(0.6, 0.4));
+    // p.vertices.push_back(Vector(0.5, 0.7));
+    // p.vertices.push_back(Vector(0.2, 0.5));
+    // std::vector<Polygon> s;
+    // s.push_back(p);
+    // save_frame(s, "toto");
+    // save_svg(s, "toto.svg");
 
-    Polygon p;
-    p.vertices.push_back(Vector(0.1, 0.2));
-    p.vertices.push_back(Vector(0.6, 0.4));
-    p.vertices.push_back(Vector(0.5, 0.7));
-    p.vertices.push_back(Vector(0.2, 0.5));
+    //Iniitalize VoroniDiagram Class Object and then call it on.
+    VoronoiDiagram voronoi;
+    int N = 10; // N is th number of sites, I start with 500.
+    //Compute.
+    for (int i = 0; i < N; ++i) {
+        voronoi.points.push_back(Vector(rand() / (double)RAND_MAX, rand() / (double)RAND_MAX));
+    }
+    voronoi.compute();
 
-    std::vector<Polygon> s;
-    s.push_back(p);
+    save_svg(voronoi.cells, "voronoi_naive.svg", "white");
+    save_frame(voronoi.cells, "voronoi_naive_");
 
-    save_frame(s, "toto");
-    save_svg(s, "toto.svg");
+    std::cout << "[CONFIRM] Done, generating naive Voronoi with " << N << " points." << std::endl;
     return 0;
 }
