@@ -230,14 +230,39 @@ public:
         return result;
     }
 
-    static Polygon clip_by_bisector(const Polygon& V, const Vector& P0, const Vector& Pi, double w0, double wi) {
-
+    static Polygon clip_by_bisector(const Polygon& V, const Vector& Pi, const Vector& Pj, double w0, double wi) { //I know there was a slight change to change the params to P0 and Pi but I think it was easier to update to Pi and Pj...(note for self - set to n-1 at some place maybe.)
+        //Note for self - Please don't overcomplicate it once you understand it, its trivial.
         // TODO Lab 1 (Voronoi) : in Lab 1, we assume w0 = w1 = 0
         // Clip a polygon by the bisector of the segment defined by P0 (the current site of the Voronoi cell being computed) and Pi (another site)
-        
-        // TODO Lab 2 (Semi-Discrete Optimal Transport) : extend to Laguerre cells, i.e., w0 != w1
+    
 
         Polygon result;
+        Vector M = (Pi + Pj) / 2.0;
+
+        for (int i = 0; i < V.vertices.size(); ++i) {
+            Vector curVertex = V.vertices[i];
+            Vector prevVertex = V.vertices[i == 0 ? V.vertices.size() - 1 : i - 1];
+
+            double dotCur = dot(curVertex - M, Pj - Pi);
+            double dotPrev = dot(prevVertex - M, Pj - Pi);
+            // Formula from notes for reference... ||X-Pi||^2 - w0 < ||X-Pj||^2 - wi -> dot(X-M, Pj-Pi) < (w0 - wi)/2
+            double limit = (w0 - wi) / 2.0;
+            bool curInside = dotCur <= limit;
+            bool prevInside = dotPrev <= limit;
+            //logic part now.
+            if (curInside){
+                if (!prevInside){ //for crossing from outside to inside.
+                    double t = (limit - dotPrev) / (dotCur - dotPrev);
+                    result.vertices.push_back(prevVertex + t * (curVertex - prevVertex)); // as per the slides.
+                }
+                result.vertices.push_back(curVertex);
+            } else if (prevInside) { // now I consider the crossing from inside ot outside.
+                double t = (limit - dotPrev) / (dotCur - dotPrev);
+                result.vertices.push_back(prevVertex + t * (curVertex - prevVertex));
+            }
+
+        }
+        // TODO Lab 2 (Semi-Discrete Optimal Transport) : extend to Laguerre cells, i.e., w0 != w1
 
         return result;
     }
