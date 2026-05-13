@@ -198,7 +198,7 @@ public:
         #pragma omp parallel for schedule(dynamic)
         for (int i = 0; i < points.size(); ++i){ //The main loop.
             Polygon cell; //initialize
-            //First we need to set the unit square as the base boundary.
+            //Base boundary, I use unit square (I have commented out Polygon p in the main method.).
             cell.vertices.push_back(Vector(0.0, 0.0));
             cell.vertices.push_back(Vector(1.0, 0.0));
             cell.vertices.push_back(Vector(1.0, 1.0));
@@ -230,7 +230,7 @@ public:
         return result;
     }
 
-    static Polygon clip_by_bisector(const Polygon& V, const Vector& Pi, const Vector& Pj, double w0, double wi) { //I know there was a slight change to change the params to P0 and Pi but I think it was easier to update to Pi and Pj...(note for self - set to n-1 at some place maybe.)
+    static Polygon clip_by_bisector(const Polygon& V, const Vector& Pi, const Vector& Pj, double w0, double wi) { //I know there was a slight change to change the params to P0 and Pi but I left it at Pi and Pj...(note for self - set to n-1 at some place maybe.)
         //Note for self - Please don't overcomplicate it once you understand it, its trivial.
         // TODO Lab 1 (Voronoi) : in Lab 1, we assume w0 = w1 = 0
         // Clip a polygon by the bisector of the segment defined by P0 (the current site of the Voronoi cell being computed) and Pi (another site)
@@ -420,17 +420,17 @@ int main() {
     // save_svg(s, "toto.svg");
 
     //Iniitalize VoroniDiagram Class Object and then call it on.
-    VoronoiDiagram voronoi;
-    int N = 10; // N is th number of sites, I start with 500.
+    VoronoiDiagram voronoi_obj;
+    int N = 100; // N is th number of sites, I start with 500.
     //Compute.
     for (int i = 0; i < N; ++i) {
-        voronoi.points.push_back(Vector(rand() / (double)RAND_MAX, rand() / (double)RAND_MAX));
+        voronoi_obj.points.push_back(Vector(rand() / (double)RAND_MAX, rand() / (double)RAND_MAX));
     }
-    voronoi.compute();
+    voronoi_obj.compute();
 
-    save_svg(voronoi.cells, "voronoi_naive.svg", "white");
-    save_frame(voronoi.cells, "voronoi_naive_");
-
+    save_svg(voronoi_obj.cells, "voronoi_naive.svg", "white");
+    save_frame(voronoi_obj.cells, "voronoi_naive_2");
+    //Confirmatory statement.
     std::cout << "[CONFIRM] Done, generating naive Voronoi with " << N << " points." << std::endl;
     return 0;
 }
